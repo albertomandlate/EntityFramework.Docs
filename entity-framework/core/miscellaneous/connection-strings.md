@@ -46,13 +46,14 @@ public class BloggingContext : DbContext
     public DbSet<Post> Posts { get; set; }
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-    {
+
+{
       optionsBuilder.UseSqlServer(ConfigurationManager.ConnectionStrings["BloggingDatabase"].ConnectionString);
     }
 }
 ````
 
-## Universal Windows Platform (UWP)
+````## Universal Windows Platform (UWP)
 
 Connection strings in a UWP application are typically a SQLite connection that just specifies a local filename. They typically do not contain sensitive information, and do not need to be changed as an application is deployed. As such, these connection strings are usually fine to be left in code, as shown below. If you wish to move them out of code then UWP supports the concept of settings, see the [App Settings section of the UWP documentation](https://msdn.microsoft.com/windows/uwp/app-settings/store-and-retrieve-app-data) for details.
 
@@ -91,5 +92,20 @@ public void ConfigureServices(IServiceCollection services)
 {
     services.AddDbContext<BloggingContext>(options =>
         options.UseSqlServer(Configuration.GetConnectionString("BloggingDatabase")));
+}
+````
+And then, add the following code to the `BloggingContext.cs` file
+
+````csharp
+public BloggingContext(DbContextOptions<BloggingContext> options) : base(options) { }
+````
+
+So when you are creating the variable of the `BloggingContext` class, you can put it as a `readonly` variable.
+The following code is just an example:
+````csharp
+private readonly BloggingContext _db;
+public BlogController(BloggingContext context)
+{
+    _db = context;
 }
 ````
